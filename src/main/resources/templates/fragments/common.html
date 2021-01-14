@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="head(title)">
     <meta charset="utf-8">
@@ -22,11 +22,24 @@
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
                     <li class="nav-item" th:classappend="${menu} == 'home' ? 'active'">
-                        <a class="nav-link" aria-current="page" href="#" th:href="@{/}">홈<span class="visually-hidden" th:if="${menu} == 'home'">(current)</span></a>
+                        <a class="nav-link" aria-current="page" href="#" th:href="@{/}">홈<span class="visually-hidden"
+                                th:if="${menu} == 'home'">(current)</span></a>
                     </li>
                     <li class="nav-item" th:classappend="${menu} == 'board' ? 'active'">
-                        <a class="nav-link" href="#" th:href="@{/board/list}">게시판<span class="visually-hidden" th:if="${menu} == 'board'">(current)</span></a>
+                        <a class="nav-link" href="#" th:href="@{/board/list}">게시판<span class="visually-hidden"
+                                th:if="${menu} == 'board'">(current)</span></a>
                     </li>
+                </ul>
+
+                <a class="btn btn-outline-success mx-2" type="submit" th:href="@{/account/login}"
+                    sec:authorize="!isAuthenticated()">Login</a>
+                <a class="btn btn-outline-success" type="submit" th:href="@{/account/register}"
+                    sec:authorize="!isAuthenticated()">회원가입</a>
+                <form class="d-flex" th:action="@{/logout}" method="POST" sec:authorize="isAuthenticated()">
+                    <span class="text-white align-self-center" sec:authentication="name">사용자</span>
+                    <span class="text-white mx-2 align-self-center" sec:authentication="principal.authorities">권한</span>
+                    <button class="btn btn-outline-success" type="submit">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
