@@ -2,12 +2,16 @@ package com.netro.jyp.controller;
 
 import com.netro.jyp.model.Board;
 import com.netro.jyp.repository.BoardRepository;
+import com.netro.jyp.service.BoardService;
 import com.netro.jyp.validator.BoardValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +23,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/board")
 public class BoardController {
+
+    @Autowired
+    private BoardService boardService;
 
     @Autowired
     private BoardRepository boardrepository;
@@ -51,13 +58,15 @@ public class BoardController {
     }
 
     @PostMapping("/form")
-    public String boardSubmit(@Valid Board board, BindingResult bindingResult) {
+    public String boardSubmit(@Valid Board board, BindingResult bindingResult, Authentication authentication) {
         boardValidator.validate(board, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return "board/form";
         }
-        boardrepository.save(board);
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); //인증정보 가져오고 싶을때
+        String username = authentication.getName();
+        boardService.save(username, board);
         return "redirect:/board/list";
     }
 
